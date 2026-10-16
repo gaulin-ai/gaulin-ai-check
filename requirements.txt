@@ -1,0 +1,4 @@
+# Tutte opzionali: senza, il test funziona con stime da scheda tecnica
+wgpu>=0.19      # benchmark GPU via Vulkan / Metal / DirectX 12
+numpy>=1.24     # buffer del benchmark GPU e misura della banda RAM
+psutil>=5.9     # core fisici e RAM disponibile
