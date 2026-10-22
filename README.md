@@ -76,7 +76,7 @@ nei layer globali (Gemma 4 12B/26B/31B) la KV cache si conta una volta sola.
 
 ## Limiti noti
 
-- Gli eseguibili non sono firmati: su Windows compare SmartScreen e su macOS Gatekeeper (tasto destro → Apri).
+- Gli eseguibili non sono firmati: su Windows compare SmartScreen e su macOS Gatekeeper (Impostazioni di Sistema → Privacy e sicurezza → "Apri comunque").
   Per distribuirli al pubblico servono un certificato di code signing e la notarizzazione Apple.
 - Il benchmark usa la GPU scelta da WebGPU come "high-performance"; con più GPU dedicate misura solo quella.
 - AMD su Windows e Intel Arc sono rilevati dal registro/sysfs; la banda arriva dal database integrato.
