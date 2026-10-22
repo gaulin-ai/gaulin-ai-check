@@ -70,6 +70,9 @@ a ogni push. Con un tag `v*` pubblica i tre eseguibili in una release.
 `aicheck/data/models.json`: per ogni modello servono i parametri totali e attivi, la KV cache per token
 (`2 × layer × kv_heads × head_dim × 2 byte`, ridotta se il modello usa sliding window), la classe
 di qualità (1-5) e i casi d'uso.
+Per i modelli con embedding per livello (Gemma 4 E2B/E4B) `params_b` comprende gli embedding e
+`active_b` sono i parametri effettivi; con KV condivisa tra layer (E2B/E4B) o chiavi uguali ai valori
+nei layer globali (Gemma 4 12B/26B/31B) la KV cache si conta una volta sola.
 
 ## Limiti noti
 

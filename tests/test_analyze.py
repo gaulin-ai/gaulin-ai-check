@@ -1,6 +1,6 @@
 """Test dell'analisi su configurazioni hardware tipiche (nessuna GPU reale necessaria)."""
 
-from aicheck import analyze, gpu_db
+from aicheck import analyze, bench_ollama, gpu_db
 from aicheck.analyze import GB
 
 
@@ -83,3 +83,19 @@ def test_gpu_db_variants():
     assert gpu_db.lookup("Apple M3 Max", gpu_cores=40)["bandwidth_gbs"] == 400
     assert gpu_db.lookup("NVIDIA A100-SXM4-40GB")["bandwidth_gbs"] == 1555
     assert gpu_db.lookup("Scheda sconosciuta") is None
+
+
+def test_gemma4_on_24gb_gpu():
+    r = analyze.analyze(system(64), [gpu("NVIDIA GeForce RTX 4090", "nvidia", 24, 1008, 8.9)])
+    dense, moe = by_id(r, "gemma4-31b")["q4"], by_id(r, "gemma4-26b-a4b")["q4"]
+    assert dense["placement"] == moe["placement"] == "gpu"
+    assert moe["tps"] > 2 * dense["tps"]  # il MoE legge solo 3,8 miliardi di parametri per token
+    assert by_id(r, "gemma4-12b")["q4"]["max_ctx"] == 262144
+
+
+def test_calibration_skips_gemma_with_per_layer_embeddings():
+    ok = bench_ollama._reads_all_weights
+    assert ok("llama3.2:3b", "llama") and ok("gemma4:12b", "gemma4") and ok("gemma4:31b-it-qat", "gemma4")
+    assert not ok("gemma4:latest", "gemma4") and not ok("gemma4:e2b", "gemma4")
+    assert not ok("gemma4:26b", "gemma4") and not ok("gemma3n:e4b", "gemma3n")
+    assert not ok("qwen3:30b", "qwen3moe")

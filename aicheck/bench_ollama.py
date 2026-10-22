@@ -15,6 +15,19 @@ PREFERRED = ["llama3.2:3b", "qwen2.5:3b", "qwen3:4b", "gemma3:4b", "llama3.1:8b"
 DEFAULT_PULL = "llama3.2:3b"
 MOE_FAMILIES = {"qwen3moe", "gptoss", "llama4", "deepseek2", "mixtral", "olmoe", "granitemoe"}
 
+
+def _reads_all_weights(name, family):
+    """True se per ogni token il modello legge tutti i suoi pesi: solo così la calibrazione è affidabile.
+
+    Esclusi i MoE e i Gemma con embedding per livello (Gemma 3n, Gemma 4 E2B/E4B, anche come gemma4:latest),
+    oltre a Gemma 4 26B che è MoE ma ha la stessa famiglia "gemma4" delle versioni dense.
+    """
+    if family in MOE_FAMILIES or name.startswith("gemma3n"):
+        return False
+    if name.startswith("gemma4"):
+        return name.partition(":")[2].startswith(("12b", "31b"))
+    return True
+
 PROMPT = (
     "Sei un consulente che aiuta una piccola azienda italiana a organizzare i propri documenti. "
     "Spiega in modo chiaro e ordinato, con un elenco puntato, come impostare un archivio digitale "
@@ -56,7 +69,7 @@ def _pick_model(models):
         if p in names:
             return names[p]
     dense = [m for m in models if _is_chat_model(m)
-             and (m.get("details") or {}).get("family") not in MOE_FAMILIES]
+             and _reads_all_weights(m["name"], (m.get("details") or {}).get("family"))]
     return min(dense, key=lambda m: m.get("size", 0)) if dense else None
 
 
@@ -127,6 +140,6 @@ def run(model=None, pull=False, log=print):
 
     # Banda effettiva: per un modello denso ogni token legge tutti i pesi una volta
     if (result.get("gen_tps") and result.get("gpu_fraction", 0) >= 0.99
-            and result.get("family") not in MOE_FAMILIES and result.get("model_size_bytes")):
+            and _reads_all_weights(name, result.get("family")) and result.get("model_size_bytes")):
         result["effective_bandwidth_gbs"] = round(result["gen_tps"] * result["model_size_bytes"] / 1e9, 1)
     return result
