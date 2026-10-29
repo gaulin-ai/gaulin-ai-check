@@ -7,6 +7,8 @@ casi d'uso aziendali, compatibilità dei framework e consigli di upgrade.
 Funziona su **Windows, Linux e macOS** con GPU **NVIDIA, AMD, Intel e Apple Silicon** (anche senza GPU).
 Non invia nessun dato in rete.
 
+Pagina del progetto, con spiegazione dei risultati e download: **[gaulin.ai/gaulin-ai-check](https://gaulin.ai/gaulin-ai-check.html)**.
+
 ## Cosa fa
 
 | Fase | Come |
@@ -81,3 +83,8 @@ nei layer globali (Gemma 4 12B/26B/31B) la KV cache si conta una volta sola.
 - Il benchmark usa la GPU scelta da WebGPU come "high-performance"; con più GPU dedicate misura solo quella.
 - AMD su Windows e Intel Arc sono rilevati dal registro/sysfs; la banda arriva dal database integrato.
 - Le stime GPU + RAM sono validate solo in modo indiretto; i valori reali dipendono dal motore e dalle impostazioni.
+
+## Autore
+
+Sviluppato da [Gaulin.ai](https://gaulin.ai/), che progetta e installa server LLM on-premise per aziende italiane.
+Per passare dal test all'uso: [guida all'LLM locale](https://gaulin.ai/local-llm-server.html) (installazione con Ollama, GPU e modelli).
